@@ -37,8 +37,8 @@ classifiers = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/meet-jenna/meet-jenna"
-Repository = "https://github.com/meet-jenna/meet-jenna"
+Homepage = "https://github.com/meet-jenna/stream-orders-python"
+Repository = "https://github.com/meet-jenna/stream-orders-python"
 
 [project.optional-dependencies]
 aiohttp = ["aiohttp", "httpx_aiohttp>=0.1.9"]
@@ -112,7 +112,7 @@ path = "README.md"
 [[tool.hatch.metadata.hooks.fancy-pypi-readme.substitutions]]
 # replace relative links with absolute links
 pattern = '\[(.+?)\]\(((?!https?://)\S+?)\)'
-replacement = '[\1](https://github.com/meet-jenna/meet-jenna/tree/main/\g<2>)'
+replacement = '[\1](https://github.com/meet-jenna/stream-orders-python/tree/main/\g<2>)'
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
