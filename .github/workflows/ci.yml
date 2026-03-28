@@ -1,41 +1,95 @@
 name: CI
-
 on:
   push:
     branches:
-      - main
+      - '**'
+      - '!integrated/**'
+      - '!stl-preview-head/**'
+      - '!stl-preview-base/**'
+      - '!generated'
+      - '!codegen/**'
+      - 'codegen/stl/**'
   pull_request:
-
-permissions:
-  actions: read
-  contents: read
+    branches-ignore:
+      - 'stl-preview-head/**'
+      - 'stl-preview-base/**'
 
 jobs:
-  main:
-    runs-on: ubuntu-latest
+  lint:
+    timeout-minutes: 10
+    name: lint
+    runs-on: ${{ github.repository == 'stainless-sdks/jenna-stream-orders-python' && 'depot-ubuntu-24.04' || 'ubuntu-latest' }}
+    if: (github.event_name == 'push' || github.event.pull_request.head.repo.fork) && (github.event_name != 'push' || github.event.head_commit.message != 'codegen metadata')
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
         with:
-          filter: tree:0
-          fetch-depth: 0
+          version: '0.10.2'
 
-      # This enables task distribution via Nx Cloud
-      # Run this command as early as possible, before dependencies are installed
-      # Learn more at https://nx.dev/ci/reference/nx-cloud-cli#npx-nxcloud-startcirun
-      # Connect your workspace by running "nx connect" and uncomment this line to enable task distribution
-      # - run: npx nx start-ci-run --distribute-on="3 linux-medium-js" --stop-agents-after="build"
+      - name: Install dependencies
+        run: uv sync --all-extras
 
-      # Cache node_modules
-      - uses: actions/setup-node@v4
+      - name: Run lints
+        run: ./scripts/lint
+
+  build:
+    if: (github.event_name == 'push' || github.event.pull_request.head.repo.fork) && (github.event_name != 'push' || github.event.head_commit.message != 'codegen metadata')
+    timeout-minutes: 10
+    name: build
+    permissions:
+      contents: read
+      id-token: write
+    runs-on: ${{ github.repository == 'stainless-sdks/jenna-stream-orders-python' && 'depot-ubuntu-24.04' || 'ubuntu-latest' }}
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
         with:
-          node-version: 20
-          cache: 'npm'
+          version: '0.10.2'
 
-      - run: npm ci
+      - name: Install dependencies
+        run: uv sync --all-extras
 
-      # Prepend any command with "nx record --" to record its logs to Nx Cloud
-      # - run: npx nx record -- echo Hello World
-      - run: npx nx run-many -t lint test build typecheck
-      # Nx Cloud recommends fixes for failures to help you get CI green faster. Learn more: https://nx.dev/ci/features/self-healing-ci
-      - run: npx nx fix-ci
-        if: always()
+      - name: Run build
+        run: uv build
+
+      - name: Get GitHub OIDC Token
+        if: |-
+          github.repository == 'stainless-sdks/jenna-stream-orders-python' &&
+          !startsWith(github.ref, 'refs/heads/stl/')
+        id: github-oidc
+        uses: actions/github-script@v8
+        with:
+          script: core.setOutput('github_token', await core.getIDToken());
+
+      - name: Upload tarball
+        if: |-
+          github.repository == 'stainless-sdks/jenna-stream-orders-python' &&
+          !startsWith(github.ref, 'refs/heads/stl/')
+        env:
+          URL: https://pkg.stainless.com/s
+          AUTH: ${{ steps.github-oidc.outputs.github_token }}
+          SHA: ${{ github.sha }}
+        run: ./scripts/utils/upload-artifact.sh
+
+  test:
+    timeout-minutes: 10
+    name: test
+    runs-on: ${{ github.repository == 'stainless-sdks/jenna-stream-orders-python' && 'depot-ubuntu-24.04' || 'ubuntu-latest' }}
+    if: github.event_name == 'push' || github.event.pull_request.head.repo.fork
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          version: '0.10.2'
+
+      - name: Bootstrap
+        run: ./scripts/bootstrap
+
+      - name: Run tests
+        run: ./scripts/test
