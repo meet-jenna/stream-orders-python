@@ -40,6 +40,7 @@ from .utils import update_env
 T = TypeVar("T")
 base_url = os.environ.get("TEST_API_BASE_URL", "http://127.0.0.1:4010")
 api_key = "My API Key"
+webhook_secret = "My Webhook Secret"
 
 
 def _get_params(client: BaseClient[Any, Any]) -> dict[str, str]:
@@ -140,6 +141,10 @@ class TestJennaStreamOrders:
         assert copied.api_key == "another My API Key"
         assert client.api_key == "My API Key"
 
+        copied = client.copy(webhook_secret="another My Webhook Secret")
+        assert copied.webhook_secret == "another My Webhook Secret"
+        assert client.webhook_secret == "My Webhook Secret"
+
     def test_copy_default_options(self, client: JennaStreamOrders) -> None:
         # options that have a default are overridden correctly
         copied = client.copy(max_retries=7)
@@ -158,7 +163,11 @@ class TestJennaStreamOrders:
 
     def test_copy_default_headers(self) -> None:
         client = JennaStreamOrders(
-            base_url=base_url, api_key=api_key, _strict_response_validation=True, default_headers={"X-Foo": "bar"}
+            base_url=base_url,
+            api_key=api_key,
+            webhook_secret=webhook_secret,
+            _strict_response_validation=True,
+            default_headers={"X-Foo": "bar"},
         )
         assert client.default_headers["X-Foo"] == "bar"
 
@@ -193,7 +202,11 @@ class TestJennaStreamOrders:
 
     def test_copy_default_query(self) -> None:
         client = JennaStreamOrders(
-            base_url=base_url, api_key=api_key, _strict_response_validation=True, default_query={"foo": "bar"}
+            base_url=base_url,
+            api_key=api_key,
+            webhook_secret=webhook_secret,
+            _strict_response_validation=True,
+            default_query={"foo": "bar"},
         )
         assert _get_params(client)["foo"] == "bar"
 
@@ -319,7 +332,11 @@ class TestJennaStreamOrders:
 
     def test_client_timeout_option(self) -> None:
         client = JennaStreamOrders(
-            base_url=base_url, api_key=api_key, _strict_response_validation=True, timeout=httpx.Timeout(0)
+            base_url=base_url,
+            api_key=api_key,
+            webhook_secret=webhook_secret,
+            _strict_response_validation=True,
+            timeout=httpx.Timeout(0),
         )
 
         request = client._build_request(FinalRequestOptions(method="get", url="/foo"))
@@ -332,7 +349,11 @@ class TestJennaStreamOrders:
         # custom timeout given to the httpx client should be used
         with httpx.Client(timeout=None) as http_client:
             client = JennaStreamOrders(
-                base_url=base_url, api_key=api_key, _strict_response_validation=True, http_client=http_client
+                base_url=base_url,
+                api_key=api_key,
+                webhook_secret=webhook_secret,
+                _strict_response_validation=True,
+                http_client=http_client,
             )
 
             request = client._build_request(FinalRequestOptions(method="get", url="/foo"))
@@ -344,7 +365,11 @@ class TestJennaStreamOrders:
         # no timeout given to the httpx client should not use the httpx default
         with httpx.Client() as http_client:
             client = JennaStreamOrders(
-                base_url=base_url, api_key=api_key, _strict_response_validation=True, http_client=http_client
+                base_url=base_url,
+                api_key=api_key,
+                webhook_secret=webhook_secret,
+                _strict_response_validation=True,
+                http_client=http_client,
             )
 
             request = client._build_request(FinalRequestOptions(method="get", url="/foo"))
@@ -356,7 +381,11 @@ class TestJennaStreamOrders:
         # explicitly passing the default timeout currently results in it being ignored
         with httpx.Client(timeout=HTTPX_DEFAULT_TIMEOUT) as http_client:
             client = JennaStreamOrders(
-                base_url=base_url, api_key=api_key, _strict_response_validation=True, http_client=http_client
+                base_url=base_url,
+                api_key=api_key,
+                webhook_secret=webhook_secret,
+                _strict_response_validation=True,
+                http_client=http_client,
             )
 
             request = client._build_request(FinalRequestOptions(method="get", url="/foo"))
@@ -371,13 +400,18 @@ class TestJennaStreamOrders:
                 JennaStreamOrders(
                     base_url=base_url,
                     api_key=api_key,
+                    webhook_secret=webhook_secret,
                     _strict_response_validation=True,
                     http_client=cast(Any, http_client),
                 )
 
     def test_default_headers_option(self) -> None:
         test_client = JennaStreamOrders(
-            base_url=base_url, api_key=api_key, _strict_response_validation=True, default_headers={"X-Foo": "bar"}
+            base_url=base_url,
+            api_key=api_key,
+            webhook_secret=webhook_secret,
+            _strict_response_validation=True,
+            default_headers={"X-Foo": "bar"},
         )
         request = test_client._build_request(FinalRequestOptions(method="get", url="/foo"))
         assert request.headers.get("x-foo") == "bar"
@@ -386,6 +420,7 @@ class TestJennaStreamOrders:
         test_client2 = JennaStreamOrders(
             base_url=base_url,
             api_key=api_key,
+            webhook_secret=webhook_secret,
             _strict_response_validation=True,
             default_headers={
                 "X-Foo": "stainless",
@@ -400,16 +435,25 @@ class TestJennaStreamOrders:
         test_client2.close()
 
     def test_validate_headers(self) -> None:
-        client = JennaStreamOrders(base_url=base_url, api_key=api_key, _strict_response_validation=True)
+        client = JennaStreamOrders(
+            base_url=base_url, api_key=api_key, webhook_secret=webhook_secret, _strict_response_validation=True
+        )
         request = client._build_request(FinalRequestOptions(method="get", url="/foo"))
         assert request.headers.get("Authorization") == f"Bearer {api_key}"
 
-        with update_env(**{"JENNA_STREAM_ORDERS_API_KEY": Omit()}):
-            client2 = JennaStreamOrders(base_url=base_url, api_key=None, _strict_response_validation=True)
+        with update_env(
+            **{
+                "JENNA_STREAM_ORDERS_API_KEY": Omit(),
+                "STREAM_DCP_WEBHOOK_SECRET": Omit(),
+            }
+        ):
+            client2 = JennaStreamOrders(
+                base_url=base_url, api_key=None, webhook_secret=None, _strict_response_validation=True
+            )
 
         with pytest.raises(
             TypeError,
-            match="Could not resolve authentication method. Expected the api_key to be set. Or for the `Authorization` headers to be explicitly omitted",
+            match="Could not resolve authentication method. Expected either api_key or webhook_secret to be set. Or for one of the `Authorization` or `Stream-Webhook-Signature` headers to be explicitly omitted",
         ):
             client2._build_request(FinalRequestOptions(method="get", url="/foo"))
 
@@ -420,7 +464,11 @@ class TestJennaStreamOrders:
 
     def test_default_query_option(self) -> None:
         client = JennaStreamOrders(
-            base_url=base_url, api_key=api_key, _strict_response_validation=True, default_query={"query_param": "bar"}
+            base_url=base_url,
+            api_key=api_key,
+            webhook_secret=webhook_secret,
+            _strict_response_validation=True,
+            default_query={"query_param": "bar"},
         )
         request = client._build_request(FinalRequestOptions(method="get", url="/foo"))
         url = httpx.URL(request.url)
@@ -593,6 +641,7 @@ class TestJennaStreamOrders:
         with JennaStreamOrders(
             base_url=base_url,
             api_key=api_key,
+            webhook_secret=webhook_secret,
             _strict_response_validation=True,
             http_client=httpx.Client(transport=MockTransport(handler=mock_handler)),
         ) as client:
@@ -691,7 +740,10 @@ class TestJennaStreamOrders:
 
     def test_base_url_setter(self) -> None:
         client = JennaStreamOrders(
-            base_url="https://example.com/from_init", api_key=api_key, _strict_response_validation=True
+            base_url="https://example.com/from_init",
+            api_key=api_key,
+            webhook_secret=webhook_secret,
+            _strict_response_validation=True,
         )
         assert client.base_url == "https://example.com/from_init/"
 
@@ -703,18 +755,22 @@ class TestJennaStreamOrders:
 
     def test_base_url_env(self) -> None:
         with update_env(JENNA_STREAM_ORDERS_BASE_URL="http://localhost:5000/from/env"):
-            client = JennaStreamOrders(api_key=api_key, _strict_response_validation=True)
+            client = JennaStreamOrders(api_key=api_key, webhook_secret=webhook_secret, _strict_response_validation=True)
             assert client.base_url == "http://localhost:5000/from/env/"
 
     @pytest.mark.parametrize(
         "client",
         [
             JennaStreamOrders(
-                base_url="http://localhost:5000/custom/path/", api_key=api_key, _strict_response_validation=True
+                base_url="http://localhost:5000/custom/path/",
+                api_key=api_key,
+                webhook_secret=webhook_secret,
+                _strict_response_validation=True,
             ),
             JennaStreamOrders(
                 base_url="http://localhost:5000/custom/path/",
                 api_key=api_key,
+                webhook_secret=webhook_secret,
                 _strict_response_validation=True,
                 http_client=httpx.Client(),
             ),
@@ -736,11 +792,15 @@ class TestJennaStreamOrders:
         "client",
         [
             JennaStreamOrders(
-                base_url="http://localhost:5000/custom/path/", api_key=api_key, _strict_response_validation=True
+                base_url="http://localhost:5000/custom/path/",
+                api_key=api_key,
+                webhook_secret=webhook_secret,
+                _strict_response_validation=True,
             ),
             JennaStreamOrders(
                 base_url="http://localhost:5000/custom/path/",
                 api_key=api_key,
+                webhook_secret=webhook_secret,
                 _strict_response_validation=True,
                 http_client=httpx.Client(),
             ),
@@ -762,11 +822,15 @@ class TestJennaStreamOrders:
         "client",
         [
             JennaStreamOrders(
-                base_url="http://localhost:5000/custom/path/", api_key=api_key, _strict_response_validation=True
+                base_url="http://localhost:5000/custom/path/",
+                api_key=api_key,
+                webhook_secret=webhook_secret,
+                _strict_response_validation=True,
             ),
             JennaStreamOrders(
                 base_url="http://localhost:5000/custom/path/",
                 api_key=api_key,
+                webhook_secret=webhook_secret,
                 _strict_response_validation=True,
                 http_client=httpx.Client(),
             ),
@@ -785,7 +849,9 @@ class TestJennaStreamOrders:
         client.close()
 
     def test_copied_client_does_not_close_http(self) -> None:
-        test_client = JennaStreamOrders(base_url=base_url, api_key=api_key, _strict_response_validation=True)
+        test_client = JennaStreamOrders(
+            base_url=base_url, api_key=api_key, webhook_secret=webhook_secret, _strict_response_validation=True
+        )
         assert not test_client.is_closed()
 
         copied = test_client.copy()
@@ -796,7 +862,9 @@ class TestJennaStreamOrders:
         assert not test_client.is_closed()
 
     def test_client_context_manager(self) -> None:
-        test_client = JennaStreamOrders(base_url=base_url, api_key=api_key, _strict_response_validation=True)
+        test_client = JennaStreamOrders(
+            base_url=base_url, api_key=api_key, webhook_secret=webhook_secret, _strict_response_validation=True
+        )
         with test_client as c2:
             assert c2 is test_client
             assert not c2.is_closed()
@@ -818,7 +886,11 @@ class TestJennaStreamOrders:
     def test_client_max_retries_validation(self) -> None:
         with pytest.raises(TypeError, match=r"max_retries cannot be None"):
             JennaStreamOrders(
-                base_url=base_url, api_key=api_key, _strict_response_validation=True, max_retries=cast(Any, None)
+                base_url=base_url,
+                api_key=api_key,
+                webhook_secret=webhook_secret,
+                _strict_response_validation=True,
+                max_retries=cast(Any, None),
             )
 
     @pytest.mark.respx(base_url=base_url)
@@ -828,12 +900,16 @@ class TestJennaStreamOrders:
 
         respx_mock.get("/foo").mock(return_value=httpx.Response(200, text="my-custom-format"))
 
-        strict_client = JennaStreamOrders(base_url=base_url, api_key=api_key, _strict_response_validation=True)
+        strict_client = JennaStreamOrders(
+            base_url=base_url, api_key=api_key, webhook_secret=webhook_secret, _strict_response_validation=True
+        )
 
         with pytest.raises(APIResponseValidationError):
             strict_client.get("/foo", cast_to=Model)
 
-        non_strict_client = JennaStreamOrders(base_url=base_url, api_key=api_key, _strict_response_validation=False)
+        non_strict_client = JennaStreamOrders(
+            base_url=base_url, api_key=api_key, webhook_secret=webhook_secret, _strict_response_validation=False
+        )
 
         response = non_strict_client.get("/foo", cast_to=Model)
         assert isinstance(response, str)  # type: ignore[unreachable]
@@ -1068,6 +1144,10 @@ class TestAsyncJennaStreamOrders:
         assert copied.api_key == "another My API Key"
         assert async_client.api_key == "My API Key"
 
+        copied = async_client.copy(webhook_secret="another My Webhook Secret")
+        assert copied.webhook_secret == "another My Webhook Secret"
+        assert async_client.webhook_secret == "My Webhook Secret"
+
     def test_copy_default_options(self, async_client: AsyncJennaStreamOrders) -> None:
         # options that have a default are overridden correctly
         copied = async_client.copy(max_retries=7)
@@ -1086,7 +1166,11 @@ class TestAsyncJennaStreamOrders:
 
     async def test_copy_default_headers(self) -> None:
         client = AsyncJennaStreamOrders(
-            base_url=base_url, api_key=api_key, _strict_response_validation=True, default_headers={"X-Foo": "bar"}
+            base_url=base_url,
+            api_key=api_key,
+            webhook_secret=webhook_secret,
+            _strict_response_validation=True,
+            default_headers={"X-Foo": "bar"},
         )
         assert client.default_headers["X-Foo"] == "bar"
 
@@ -1121,7 +1205,11 @@ class TestAsyncJennaStreamOrders:
 
     async def test_copy_default_query(self) -> None:
         client = AsyncJennaStreamOrders(
-            base_url=base_url, api_key=api_key, _strict_response_validation=True, default_query={"foo": "bar"}
+            base_url=base_url,
+            api_key=api_key,
+            webhook_secret=webhook_secret,
+            _strict_response_validation=True,
+            default_query={"foo": "bar"},
         )
         assert _get_params(client)["foo"] == "bar"
 
@@ -1249,7 +1337,11 @@ class TestAsyncJennaStreamOrders:
 
     async def test_client_timeout_option(self) -> None:
         client = AsyncJennaStreamOrders(
-            base_url=base_url, api_key=api_key, _strict_response_validation=True, timeout=httpx.Timeout(0)
+            base_url=base_url,
+            api_key=api_key,
+            webhook_secret=webhook_secret,
+            _strict_response_validation=True,
+            timeout=httpx.Timeout(0),
         )
 
         request = client._build_request(FinalRequestOptions(method="get", url="/foo"))
@@ -1262,7 +1354,11 @@ class TestAsyncJennaStreamOrders:
         # custom timeout given to the httpx client should be used
         async with httpx.AsyncClient(timeout=None) as http_client:
             client = AsyncJennaStreamOrders(
-                base_url=base_url, api_key=api_key, _strict_response_validation=True, http_client=http_client
+                base_url=base_url,
+                api_key=api_key,
+                webhook_secret=webhook_secret,
+                _strict_response_validation=True,
+                http_client=http_client,
             )
 
             request = client._build_request(FinalRequestOptions(method="get", url="/foo"))
@@ -1274,7 +1370,11 @@ class TestAsyncJennaStreamOrders:
         # no timeout given to the httpx client should not use the httpx default
         async with httpx.AsyncClient() as http_client:
             client = AsyncJennaStreamOrders(
-                base_url=base_url, api_key=api_key, _strict_response_validation=True, http_client=http_client
+                base_url=base_url,
+                api_key=api_key,
+                webhook_secret=webhook_secret,
+                _strict_response_validation=True,
+                http_client=http_client,
             )
 
             request = client._build_request(FinalRequestOptions(method="get", url="/foo"))
@@ -1286,7 +1386,11 @@ class TestAsyncJennaStreamOrders:
         # explicitly passing the default timeout currently results in it being ignored
         async with httpx.AsyncClient(timeout=HTTPX_DEFAULT_TIMEOUT) as http_client:
             client = AsyncJennaStreamOrders(
-                base_url=base_url, api_key=api_key, _strict_response_validation=True, http_client=http_client
+                base_url=base_url,
+                api_key=api_key,
+                webhook_secret=webhook_secret,
+                _strict_response_validation=True,
+                http_client=http_client,
             )
 
             request = client._build_request(FinalRequestOptions(method="get", url="/foo"))
@@ -1301,13 +1405,18 @@ class TestAsyncJennaStreamOrders:
                 AsyncJennaStreamOrders(
                     base_url=base_url,
                     api_key=api_key,
+                    webhook_secret=webhook_secret,
                     _strict_response_validation=True,
                     http_client=cast(Any, http_client),
                 )
 
     async def test_default_headers_option(self) -> None:
         test_client = AsyncJennaStreamOrders(
-            base_url=base_url, api_key=api_key, _strict_response_validation=True, default_headers={"X-Foo": "bar"}
+            base_url=base_url,
+            api_key=api_key,
+            webhook_secret=webhook_secret,
+            _strict_response_validation=True,
+            default_headers={"X-Foo": "bar"},
         )
         request = test_client._build_request(FinalRequestOptions(method="get", url="/foo"))
         assert request.headers.get("x-foo") == "bar"
@@ -1316,6 +1425,7 @@ class TestAsyncJennaStreamOrders:
         test_client2 = AsyncJennaStreamOrders(
             base_url=base_url,
             api_key=api_key,
+            webhook_secret=webhook_secret,
             _strict_response_validation=True,
             default_headers={
                 "X-Foo": "stainless",
@@ -1330,16 +1440,25 @@ class TestAsyncJennaStreamOrders:
         await test_client2.close()
 
     def test_validate_headers(self) -> None:
-        client = AsyncJennaStreamOrders(base_url=base_url, api_key=api_key, _strict_response_validation=True)
+        client = AsyncJennaStreamOrders(
+            base_url=base_url, api_key=api_key, webhook_secret=webhook_secret, _strict_response_validation=True
+        )
         request = client._build_request(FinalRequestOptions(method="get", url="/foo"))
         assert request.headers.get("Authorization") == f"Bearer {api_key}"
 
-        with update_env(**{"JENNA_STREAM_ORDERS_API_KEY": Omit()}):
-            client2 = AsyncJennaStreamOrders(base_url=base_url, api_key=None, _strict_response_validation=True)
+        with update_env(
+            **{
+                "JENNA_STREAM_ORDERS_API_KEY": Omit(),
+                "STREAM_DCP_WEBHOOK_SECRET": Omit(),
+            }
+        ):
+            client2 = AsyncJennaStreamOrders(
+                base_url=base_url, api_key=None, webhook_secret=None, _strict_response_validation=True
+            )
 
         with pytest.raises(
             TypeError,
-            match="Could not resolve authentication method. Expected the api_key to be set. Or for the `Authorization` headers to be explicitly omitted",
+            match="Could not resolve authentication method. Expected either api_key or webhook_secret to be set. Or for one of the `Authorization` or `Stream-Webhook-Signature` headers to be explicitly omitted",
         ):
             client2._build_request(FinalRequestOptions(method="get", url="/foo"))
 
@@ -1350,7 +1469,11 @@ class TestAsyncJennaStreamOrders:
 
     async def test_default_query_option(self) -> None:
         client = AsyncJennaStreamOrders(
-            base_url=base_url, api_key=api_key, _strict_response_validation=True, default_query={"query_param": "bar"}
+            base_url=base_url,
+            api_key=api_key,
+            webhook_secret=webhook_secret,
+            _strict_response_validation=True,
+            default_query={"query_param": "bar"},
         )
         request = client._build_request(FinalRequestOptions(method="get", url="/foo"))
         url = httpx.URL(request.url)
@@ -1523,6 +1646,7 @@ class TestAsyncJennaStreamOrders:
         async with AsyncJennaStreamOrders(
             base_url=base_url,
             api_key=api_key,
+            webhook_secret=webhook_secret,
             _strict_response_validation=True,
             http_client=httpx.AsyncClient(transport=MockTransport(handler=mock_handler)),
         ) as client:
@@ -1623,7 +1747,10 @@ class TestAsyncJennaStreamOrders:
 
     async def test_base_url_setter(self) -> None:
         client = AsyncJennaStreamOrders(
-            base_url="https://example.com/from_init", api_key=api_key, _strict_response_validation=True
+            base_url="https://example.com/from_init",
+            api_key=api_key,
+            webhook_secret=webhook_secret,
+            _strict_response_validation=True,
         )
         assert client.base_url == "https://example.com/from_init/"
 
@@ -1635,18 +1762,24 @@ class TestAsyncJennaStreamOrders:
 
     async def test_base_url_env(self) -> None:
         with update_env(JENNA_STREAM_ORDERS_BASE_URL="http://localhost:5000/from/env"):
-            client = AsyncJennaStreamOrders(api_key=api_key, _strict_response_validation=True)
+            client = AsyncJennaStreamOrders(
+                api_key=api_key, webhook_secret=webhook_secret, _strict_response_validation=True
+            )
             assert client.base_url == "http://localhost:5000/from/env/"
 
     @pytest.mark.parametrize(
         "client",
         [
             AsyncJennaStreamOrders(
-                base_url="http://localhost:5000/custom/path/", api_key=api_key, _strict_response_validation=True
+                base_url="http://localhost:5000/custom/path/",
+                api_key=api_key,
+                webhook_secret=webhook_secret,
+                _strict_response_validation=True,
             ),
             AsyncJennaStreamOrders(
                 base_url="http://localhost:5000/custom/path/",
                 api_key=api_key,
+                webhook_secret=webhook_secret,
                 _strict_response_validation=True,
                 http_client=httpx.AsyncClient(),
             ),
@@ -1668,11 +1801,15 @@ class TestAsyncJennaStreamOrders:
         "client",
         [
             AsyncJennaStreamOrders(
-                base_url="http://localhost:5000/custom/path/", api_key=api_key, _strict_response_validation=True
+                base_url="http://localhost:5000/custom/path/",
+                api_key=api_key,
+                webhook_secret=webhook_secret,
+                _strict_response_validation=True,
             ),
             AsyncJennaStreamOrders(
                 base_url="http://localhost:5000/custom/path/",
                 api_key=api_key,
+                webhook_secret=webhook_secret,
                 _strict_response_validation=True,
                 http_client=httpx.AsyncClient(),
             ),
@@ -1694,11 +1831,15 @@ class TestAsyncJennaStreamOrders:
         "client",
         [
             AsyncJennaStreamOrders(
-                base_url="http://localhost:5000/custom/path/", api_key=api_key, _strict_response_validation=True
+                base_url="http://localhost:5000/custom/path/",
+                api_key=api_key,
+                webhook_secret=webhook_secret,
+                _strict_response_validation=True,
             ),
             AsyncJennaStreamOrders(
                 base_url="http://localhost:5000/custom/path/",
                 api_key=api_key,
+                webhook_secret=webhook_secret,
                 _strict_response_validation=True,
                 http_client=httpx.AsyncClient(),
             ),
@@ -1717,7 +1858,9 @@ class TestAsyncJennaStreamOrders:
         await client.close()
 
     async def test_copied_client_does_not_close_http(self) -> None:
-        test_client = AsyncJennaStreamOrders(base_url=base_url, api_key=api_key, _strict_response_validation=True)
+        test_client = AsyncJennaStreamOrders(
+            base_url=base_url, api_key=api_key, webhook_secret=webhook_secret, _strict_response_validation=True
+        )
         assert not test_client.is_closed()
 
         copied = test_client.copy()
@@ -1729,7 +1872,9 @@ class TestAsyncJennaStreamOrders:
         assert not test_client.is_closed()
 
     async def test_client_context_manager(self) -> None:
-        test_client = AsyncJennaStreamOrders(base_url=base_url, api_key=api_key, _strict_response_validation=True)
+        test_client = AsyncJennaStreamOrders(
+            base_url=base_url, api_key=api_key, webhook_secret=webhook_secret, _strict_response_validation=True
+        )
         async with test_client as c2:
             assert c2 is test_client
             assert not c2.is_closed()
@@ -1753,7 +1898,11 @@ class TestAsyncJennaStreamOrders:
     async def test_client_max_retries_validation(self) -> None:
         with pytest.raises(TypeError, match=r"max_retries cannot be None"):
             AsyncJennaStreamOrders(
-                base_url=base_url, api_key=api_key, _strict_response_validation=True, max_retries=cast(Any, None)
+                base_url=base_url,
+                api_key=api_key,
+                webhook_secret=webhook_secret,
+                _strict_response_validation=True,
+                max_retries=cast(Any, None),
             )
 
     @pytest.mark.respx(base_url=base_url)
@@ -1763,13 +1912,15 @@ class TestAsyncJennaStreamOrders:
 
         respx_mock.get("/foo").mock(return_value=httpx.Response(200, text="my-custom-format"))
 
-        strict_client = AsyncJennaStreamOrders(base_url=base_url, api_key=api_key, _strict_response_validation=True)
+        strict_client = AsyncJennaStreamOrders(
+            base_url=base_url, api_key=api_key, webhook_secret=webhook_secret, _strict_response_validation=True
+        )
 
         with pytest.raises(APIResponseValidationError):
             await strict_client.get("/foo", cast_to=Model)
 
         non_strict_client = AsyncJennaStreamOrders(
-            base_url=base_url, api_key=api_key, _strict_response_validation=False
+            base_url=base_url, api_key=api_key, webhook_secret=webhook_secret, _strict_response_validation=False
         )
 
         response = await non_strict_client.get("/foo", cast_to=Model)

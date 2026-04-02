@@ -143,7 +143,6 @@ class TestOrder:
                 "unpaid": True,
             },
             type="type",
-            stream_webhook_signature="Stream-Webhook-Signature",
         )
         assert order is None
 
@@ -313,7 +312,6 @@ class TestOrder:
             type="type",
             cancel_reason="customer_requested",
             cancel_source="customer",
-            stream_webhook_signature="Stream-Webhook-Signature",
         )
         assert order is None
 
@@ -383,7 +381,6 @@ class TestOrder:
                 "start_time": 0,
             },
             type="type",
-            stream_webhook_signature="Stream-Webhook-Signature",
         )
         assert order is None
 
@@ -469,7 +466,6 @@ class TestOrder:
                 "passcode": "passcode",
                 "picture_url": "picture_url",
             },
-            stream_webhook_signature="Stream-Webhook-Signature",
         )
         assert order is None
 
@@ -653,7 +649,6 @@ class TestAsyncOrder:
                 "unpaid": True,
             },
             type="type",
-            stream_webhook_signature="Stream-Webhook-Signature",
         )
         assert order is None
 
@@ -823,7 +818,6 @@ class TestAsyncOrder:
             type="type",
             cancel_reason="customer_requested",
             cancel_source="customer",
-            stream_webhook_signature="Stream-Webhook-Signature",
         )
         assert order is None
 
@@ -893,7 +887,6 @@ class TestAsyncOrder:
                 "start_time": 0,
             },
             type="type",
-            stream_webhook_signature="Stream-Webhook-Signature",
         )
         assert order is None
 
@@ -979,7 +972,6 @@ class TestAsyncOrder:
                 "passcode": "passcode",
                 "picture_url": "picture_url",
             },
-            stream_webhook_signature="Stream-Webhook-Signature",
         )
         assert order is None
 

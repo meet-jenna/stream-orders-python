@@ -8,7 +8,7 @@ import httpx
 
 from ..types import order_submit_params
 from .._types import Body, Omit, Query, Headers, NoneType, NotGiven, omit, not_given
-from .._utils import path_template, required_args, maybe_transform, strip_not_given, async_maybe_transform
+from .._utils import path_template, required_args, maybe_transform, async_maybe_transform
 from .._compat import cached_property
 from .._resource import SyncAPIResource, AsyncAPIResource
 from .._response import (
@@ -50,7 +50,6 @@ class OrderResource(SyncAPIResource):
         location_id: str,
         order: order_submit_params.StreamWebhookNewOrderEventOrder,
         type: str,
-        stream_webhook_signature: str | Omit = omit,
         # Use the following arguments if you need to pass additional parameters to the API that aren't available via kwargs.
         # The extra values given here take precedence over values defined on the client or passed to this method.
         extra_headers: Headers | None = None,
@@ -111,7 +110,6 @@ class OrderResource(SyncAPIResource):
         ]
         | Omit = omit,
         cancel_source: Literal["customer", "restaurant", "driver", "dsp", "stream", "unknown"] | Omit = omit,
-        stream_webhook_signature: str | Omit = omit,
         # Use the following arguments if you need to pass additional parameters to the API that aren't available via kwargs.
         # The extra values given here take precedence over values defined on the client or passed to this method.
         extra_headers: Headers | None = None,
@@ -156,7 +154,6 @@ class OrderResource(SyncAPIResource):
         location_id: str,
         status_update: order_submit_params.StreamWebhookStoreStatusUpdateEventStatusUpdate,
         type: str,
-        stream_webhook_signature: str | Omit = omit,
         # Use the following arguments if you need to pass additional parameters to the API that aren't available via kwargs.
         # The extra values given here take precedence over values defined on the client or passed to this method.
         extra_headers: Headers | None = None,
@@ -210,7 +207,6 @@ class OrderResource(SyncAPIResource):
         order_id: str,
         type: str,
         driver_details: order_submit_params.StreamWebhookDeliveryStatusUpdateEventDriverDetails | Omit = omit,
-        stream_webhook_signature: str | Omit = omit,
         # Use the following arguments if you need to pass additional parameters to the API that aren't available via kwargs.
         # The extra values given here take precedence over values defined on the client or passed to this method.
         extra_headers: Headers | None = None,
@@ -255,7 +251,6 @@ class OrderResource(SyncAPIResource):
         location_id: str,
         order: order_submit_params.StreamWebhookNewOrderEventOrder | Omit = omit,
         type: str,
-        stream_webhook_signature: str | Omit = omit,
         order_id: str | Omit = omit,
         cancel_reason: Literal[
             "customer_requested",
@@ -312,10 +307,6 @@ class OrderResource(SyncAPIResource):
         if not partner_id:
             raise ValueError(f"Expected a non-empty value for `partner_id` but received {partner_id!r}")
         extra_headers = {"Accept": "*/*", **(extra_headers or {})}
-        extra_headers = {
-            **strip_not_given({"Stream-Webhook-Signature": stream_webhook_signature}),
-            **(extra_headers or {}),
-        }
         return self._post(
             ("https://dev-unstable-orders.hookedapi.com" if not self._client._base_url_overridden else "")
             + path_template("/order/{partner_id}", partner_id=partner_id),
@@ -334,7 +325,11 @@ class OrderResource(SyncAPIResource):
                 order_submit_params.OrderSubmitParams,
             ),
             options=make_request_options(
-                extra_headers=extra_headers, extra_query=extra_query, extra_body=extra_body, timeout=timeout
+                extra_headers=extra_headers,
+                extra_query=extra_query,
+                extra_body=extra_body,
+                timeout=timeout,
+                security={"webhook_hmac": True},
             ),
             cast_to=NoneType,
         )
@@ -368,7 +363,6 @@ class AsyncOrderResource(AsyncAPIResource):
         location_id: str,
         order: order_submit_params.StreamWebhookNewOrderEventOrder,
         type: str,
-        stream_webhook_signature: str | Omit = omit,
         # Use the following arguments if you need to pass additional parameters to the API that aren't available via kwargs.
         # The extra values given here take precedence over values defined on the client or passed to this method.
         extra_headers: Headers | None = None,
@@ -429,7 +423,6 @@ class AsyncOrderResource(AsyncAPIResource):
         ]
         | Omit = omit,
         cancel_source: Literal["customer", "restaurant", "driver", "dsp", "stream", "unknown"] | Omit = omit,
-        stream_webhook_signature: str | Omit = omit,
         # Use the following arguments if you need to pass additional parameters to the API that aren't available via kwargs.
         # The extra values given here take precedence over values defined on the client or passed to this method.
         extra_headers: Headers | None = None,
@@ -474,7 +467,6 @@ class AsyncOrderResource(AsyncAPIResource):
         location_id: str,
         status_update: order_submit_params.StreamWebhookStoreStatusUpdateEventStatusUpdate,
         type: str,
-        stream_webhook_signature: str | Omit = omit,
         # Use the following arguments if you need to pass additional parameters to the API that aren't available via kwargs.
         # The extra values given here take precedence over values defined on the client or passed to this method.
         extra_headers: Headers | None = None,
@@ -528,7 +520,6 @@ class AsyncOrderResource(AsyncAPIResource):
         order_id: str,
         type: str,
         driver_details: order_submit_params.StreamWebhookDeliveryStatusUpdateEventDriverDetails | Omit = omit,
-        stream_webhook_signature: str | Omit = omit,
         # Use the following arguments if you need to pass additional parameters to the API that aren't available via kwargs.
         # The extra values given here take precedence over values defined on the client or passed to this method.
         extra_headers: Headers | None = None,
@@ -573,7 +564,6 @@ class AsyncOrderResource(AsyncAPIResource):
         location_id: str,
         order: order_submit_params.StreamWebhookNewOrderEventOrder | Omit = omit,
         type: str,
-        stream_webhook_signature: str | Omit = omit,
         order_id: str | Omit = omit,
         cancel_reason: Literal[
             "customer_requested",
@@ -630,10 +620,6 @@ class AsyncOrderResource(AsyncAPIResource):
         if not partner_id:
             raise ValueError(f"Expected a non-empty value for `partner_id` but received {partner_id!r}")
         extra_headers = {"Accept": "*/*", **(extra_headers or {})}
-        extra_headers = {
-            **strip_not_given({"Stream-Webhook-Signature": stream_webhook_signature}),
-            **(extra_headers or {}),
-        }
         return await self._post(
             ("https://dev-unstable-orders.hookedapi.com" if not self._client._base_url_overridden else "")
             + path_template("/order/{partner_id}", partner_id=partner_id),
@@ -652,7 +638,11 @@ class AsyncOrderResource(AsyncAPIResource):
                 order_submit_params.OrderSubmitParams,
             ),
             options=make_request_options(
-                extra_headers=extra_headers, extra_query=extra_query, extra_body=extra_body, timeout=timeout
+                extra_headers=extra_headers,
+                extra_query=extra_query,
+                extra_body=extra_body,
+                timeout=timeout,
+                security={"webhook_hmac": True},
             ),
             cast_to=NoneType,
         )
