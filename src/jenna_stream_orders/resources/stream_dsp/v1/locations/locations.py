@@ -69,7 +69,11 @@ class LocationsResource(SyncAPIResource):
         return self._get(
             "/stream-dsp/v1/locations",
             options=make_request_options(
-                extra_headers=extra_headers, extra_query=extra_query, extra_body=extra_body, timeout=timeout
+                extra_headers=extra_headers,
+                extra_query=extra_query,
+                extra_body=extra_body,
+                timeout=timeout,
+                security={"bearer_auth": True},
             ),
             cast_to=LocationListResponse,
         )
@@ -117,7 +121,11 @@ class AsyncLocationsResource(AsyncAPIResource):
         return await self._get(
             "/stream-dsp/v1/locations",
             options=make_request_options(
-                extra_headers=extra_headers, extra_query=extra_query, extra_body=extra_body, timeout=timeout
+                extra_headers=extra_headers,
+                extra_query=extra_query,
+                extra_body=extra_body,
+                timeout=timeout,
+                security={"bearer_auth": True},
             ),
             cast_to=LocationListResponse,
         )

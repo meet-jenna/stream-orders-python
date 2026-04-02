@@ -1,4 +1,4 @@
 configured_endpoints: 9
-openapi_spec_url: https://storage.googleapis.com/stainless-sdk-openapi-specs/meet-jenna%2Fjenna-stream-orders-2af82cd11f1196ca5a6522e3bd80028191be6f4a44104b41ff32b01619ae678d.yml
-openapi_spec_hash: 9e9f5fe7f924f38f79963930fdfeb459
-config_hash: 9999bffcddf888354bfe33c8cd392fc8
+openapi_spec_url: https://storage.googleapis.com/stainless-sdk-openapi-specs/meet-jenna%2Fjenna-stream-orders-a5d965f373797f92ec4cd04ebd08ef71c08b47210f3c448941e846b52aaa28f3.yml
+openapi_spec_hash: 43581b91e70a80c947898c8dc0a49f36
+config_hash: 722987fc9c2056f6b075e77625f74f96

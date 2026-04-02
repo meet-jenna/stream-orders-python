@@ -3,9 +3,8 @@
 from __future__ import annotations
 
 from typing import Union, Iterable
-from typing_extensions import Literal, Required, Annotated, TypeAlias, TypedDict
+from typing_extensions import Literal, Required, TypeAlias, TypedDict
 
-from .._utils import PropertyInfo
 from .customer_param import CustomerParam
 from .stream_dsp.v1.address_param import AddressParam
 
@@ -33,8 +32,6 @@ class StreamWebhookNewOrderEvent(TypedDict, total=False):
     """A new order. This property should only exist if this is a new order event."""
 
     type: Required[str]
-
-    stream_webhook_signature: Annotated[str, PropertyInfo(alias="Stream-Webhook-Signature")]
 
 
 class StreamWebhookNewOrderEventOrderItem(TypedDict, total=False):
@@ -254,8 +251,6 @@ class StreamWebhookCancelOrderEvent(TypedDict, total=False):
     Accepted values: customer, restaurant, driver, dsp.
     """
 
-    stream_webhook_signature: Annotated[str, PropertyInfo(alias="Stream-Webhook-Signature")]
-
 
 class StreamWebhookStoreStatusUpdateEvent(TypedDict, total=False):
     location_id: Required[str]
@@ -265,8 +260,6 @@ class StreamWebhookStoreStatusUpdateEvent(TypedDict, total=False):
     """Status update for the given location"""
 
     type: Required[str]
-
-    stream_webhook_signature: Annotated[str, PropertyInfo(alias="Stream-Webhook-Signature")]
 
 
 class StreamWebhookStoreStatusUpdateEventStatusUpdate(TypedDict, total=False):
@@ -321,8 +314,6 @@ class StreamWebhookDeliveryStatusUpdateEvent(TypedDict, total=False):
 
     driver_details: StreamWebhookDeliveryStatusUpdateEventDriverDetails
     """The driver details for the given order"""
-
-    stream_webhook_signature: Annotated[str, PropertyInfo(alias="Stream-Webhook-Signature")]
 
 
 class StreamWebhookDeliveryStatusUpdateEventDriverDetailsPhone(TypedDict, total=False):
