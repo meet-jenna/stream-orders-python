@@ -52,11 +52,13 @@ __all__ = [
 class JennaStreamOrders(SyncAPIClient):
     # client options
     api_key: str | None
+    webhook_secret: str | None
 
     def __init__(
         self,
         *,
         api_key: str | None = None,
+        webhook_secret: str | None = None,
         base_url: str | httpx.URL | None = None,
         timeout: float | Timeout | None | NotGiven = not_given,
         max_retries: int = DEFAULT_MAX_RETRIES,
@@ -78,11 +80,17 @@ class JennaStreamOrders(SyncAPIClient):
     ) -> None:
         """Construct a new synchronous JennaStreamOrders client instance.
 
-        This automatically infers the `api_key` argument from the `JENNA_STREAM_ORDERS_API_KEY` environment variable if it is not provided.
+        This automatically infers the following arguments from their corresponding environment variables if they are not provided:
+        - `api_key` from `JENNA_STREAM_ORDERS_API_KEY`
+        - `webhook_secret` from `STREAM_DCP_WEBHOOK_SECRET`
         """
         if api_key is None:
             api_key = os.environ.get("JENNA_STREAM_ORDERS_API_KEY")
         self.api_key = api_key
+
+        if webhook_secret is None:
+            webhook_secret = os.environ.get("STREAM_DCP_WEBHOOK_SECRET")
+        self.webhook_secret = webhook_secret
 
         if base_url is None:
             base_url = os.environ.get("JENNA_STREAM_ORDERS_BASE_URL")
@@ -130,6 +138,7 @@ class JennaStreamOrders(SyncAPIClient):
     def _auth_headers(self, security: SecurityOptions) -> dict[str, str]:
         return {
             **(self._bearer_auth if security.get("bearer_auth", False) else {}),
+            **(self._webhook_hmac if security.get("webhook_hmac", False) else {}),
         }
 
     @property
@@ -138,6 +147,13 @@ class JennaStreamOrders(SyncAPIClient):
         if api_key is None:
             return {}
         return {"Authorization": f"Bearer {api_key}"}
+
+    @property
+    def _webhook_hmac(self) -> dict[str, str]:
+        webhook_secret = self.webhook_secret
+        if webhook_secret is None:
+            return {}
+        return {"Stream-Webhook-Signature": webhook_secret}
 
     @property
     @override
@@ -153,14 +169,18 @@ class JennaStreamOrders(SyncAPIClient):
         if headers.get("Authorization") or isinstance(custom_headers.get("Authorization"), Omit):
             return
 
+        if headers.get("Stream-Webhook-Signature") or isinstance(custom_headers.get("Stream-Webhook-Signature"), Omit):
+            return
+
         raise TypeError(
-            '"Could not resolve authentication method. Expected the api_key to be set. Or for the `Authorization` headers to be explicitly omitted"'
+            '"Could not resolve authentication method. Expected either api_key or webhook_secret to be set. Or for one of the `Authorization` or `Stream-Webhook-Signature` headers to be explicitly omitted"'
         )
 
     def copy(
         self,
         *,
         api_key: str | None = None,
+        webhook_secret: str | None = None,
         base_url: str | httpx.URL | None = None,
         timeout: float | Timeout | None | NotGiven = not_given,
         http_client: httpx.Client | None = None,
@@ -195,6 +215,7 @@ class JennaStreamOrders(SyncAPIClient):
         http_client = http_client or self._client
         client = self.__class__(
             api_key=api_key or self.api_key,
+            webhook_secret=webhook_secret or self.webhook_secret,
             base_url=base_url or self.base_url,
             timeout=self.timeout if isinstance(timeout, NotGiven) else timeout,
             http_client=http_client,
@@ -247,11 +268,13 @@ class JennaStreamOrders(SyncAPIClient):
 class AsyncJennaStreamOrders(AsyncAPIClient):
     # client options
     api_key: str | None
+    webhook_secret: str | None
 
     def __init__(
         self,
         *,
         api_key: str | None = None,
+        webhook_secret: str | None = None,
         base_url: str | httpx.URL | None = None,
         timeout: float | Timeout | None | NotGiven = not_given,
         max_retries: int = DEFAULT_MAX_RETRIES,
@@ -273,11 +296,17 @@ class AsyncJennaStreamOrders(AsyncAPIClient):
     ) -> None:
         """Construct a new async AsyncJennaStreamOrders client instance.
 
-        This automatically infers the `api_key` argument from the `JENNA_STREAM_ORDERS_API_KEY` environment variable if it is not provided.
+        This automatically infers the following arguments from their corresponding environment variables if they are not provided:
+        - `api_key` from `JENNA_STREAM_ORDERS_API_KEY`
+        - `webhook_secret` from `STREAM_DCP_WEBHOOK_SECRET`
         """
         if api_key is None:
             api_key = os.environ.get("JENNA_STREAM_ORDERS_API_KEY")
         self.api_key = api_key
+
+        if webhook_secret is None:
+            webhook_secret = os.environ.get("STREAM_DCP_WEBHOOK_SECRET")
+        self.webhook_secret = webhook_secret
 
         if base_url is None:
             base_url = os.environ.get("JENNA_STREAM_ORDERS_BASE_URL")
@@ -325,6 +354,7 @@ class AsyncJennaStreamOrders(AsyncAPIClient):
     def _auth_headers(self, security: SecurityOptions) -> dict[str, str]:
         return {
             **(self._bearer_auth if security.get("bearer_auth", False) else {}),
+            **(self._webhook_hmac if security.get("webhook_hmac", False) else {}),
         }
 
     @property
@@ -333,6 +363,13 @@ class AsyncJennaStreamOrders(AsyncAPIClient):
         if api_key is None:
             return {}
         return {"Authorization": f"Bearer {api_key}"}
+
+    @property
+    def _webhook_hmac(self) -> dict[str, str]:
+        webhook_secret = self.webhook_secret
+        if webhook_secret is None:
+            return {}
+        return {"Stream-Webhook-Signature": webhook_secret}
 
     @property
     @override
@@ -348,14 +385,18 @@ class AsyncJennaStreamOrders(AsyncAPIClient):
         if headers.get("Authorization") or isinstance(custom_headers.get("Authorization"), Omit):
             return
 
+        if headers.get("Stream-Webhook-Signature") or isinstance(custom_headers.get("Stream-Webhook-Signature"), Omit):
+            return
+
         raise TypeError(
-            '"Could not resolve authentication method. Expected the api_key to be set. Or for the `Authorization` headers to be explicitly omitted"'
+            '"Could not resolve authentication method. Expected either api_key or webhook_secret to be set. Or for one of the `Authorization` or `Stream-Webhook-Signature` headers to be explicitly omitted"'
         )
 
     def copy(
         self,
         *,
         api_key: str | None = None,
+        webhook_secret: str | None = None,
         base_url: str | httpx.URL | None = None,
         timeout: float | Timeout | None | NotGiven = not_given,
         http_client: httpx.AsyncClient | None = None,
@@ -390,6 +431,7 @@ class AsyncJennaStreamOrders(AsyncAPIClient):
         http_client = http_client or self._client
         client = self.__class__(
             api_key=api_key or self.api_key,
+            webhook_secret=webhook_secret or self.webhook_secret,
             base_url=base_url or self.base_url,
             timeout=self.timeout if isinstance(timeout, NotGiven) else timeout,
             http_client=http_client,

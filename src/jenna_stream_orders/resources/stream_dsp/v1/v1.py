@@ -100,6 +100,7 @@ class V1Resource(SyncAPIResource):
                     },
                     v1_authorize_params.V1AuthorizeParams,
                 ),
+                security={"bearer_auth": True},
             ),
             cast_to=NoneType,
         )
@@ -125,7 +126,11 @@ class V1Resource(SyncAPIResource):
             self._get(
                 "/stream-dsp/v1/menuFileS3Url",
                 options=make_request_options(
-                    extra_headers=extra_headers, extra_query=extra_query, extra_body=extra_body, timeout=timeout
+                    extra_headers=extra_headers,
+                    extra_query=extra_query,
+                    extra_body=extra_body,
+                    timeout=timeout,
+                    security={"bearer_auth": True},
                 ),
                 cast_to=cast(
                     Any, V1GetMenuFileURLResponse
@@ -487,7 +492,11 @@ class V1Resource(SyncAPIResource):
                 v1_new_event_params.V1NewEventParams,
             ),
             options=make_request_options(
-                extra_headers=extra_headers, extra_query=extra_query, extra_body=extra_body, timeout=timeout
+                extra_headers=extra_headers,
+                extra_query=extra_query,
+                extra_body=extra_body,
+                timeout=timeout,
+                security={"bearer_auth": True},
             ),
             cast_to=object,
         )
@@ -598,7 +607,11 @@ class V1Resource(SyncAPIResource):
                 v1_request_token_params.V1RequestTokenParams,
             ),
             options=make_request_options(
-                extra_headers=extra_headers, extra_query=extra_query, extra_body=extra_body, timeout=timeout
+                extra_headers=extra_headers,
+                extra_query=extra_query,
+                extra_body=extra_body,
+                timeout=timeout,
+                security={"bearer_auth": True},
             ),
             cast_to=V1RequestTokenResponse,
         )
@@ -671,6 +684,7 @@ class AsyncV1Resource(AsyncAPIResource):
                     },
                     v1_authorize_params.V1AuthorizeParams,
                 ),
+                security={"bearer_auth": True},
             ),
             cast_to=NoneType,
         )
@@ -696,7 +710,11 @@ class AsyncV1Resource(AsyncAPIResource):
             await self._get(
                 "/stream-dsp/v1/menuFileS3Url",
                 options=make_request_options(
-                    extra_headers=extra_headers, extra_query=extra_query, extra_body=extra_body, timeout=timeout
+                    extra_headers=extra_headers,
+                    extra_query=extra_query,
+                    extra_body=extra_body,
+                    timeout=timeout,
+                    security={"bearer_auth": True},
                 ),
                 cast_to=cast(
                     Any, V1GetMenuFileURLResponse
@@ -1058,7 +1076,11 @@ class AsyncV1Resource(AsyncAPIResource):
                 v1_new_event_params.V1NewEventParams,
             ),
             options=make_request_options(
-                extra_headers=extra_headers, extra_query=extra_query, extra_body=extra_body, timeout=timeout
+                extra_headers=extra_headers,
+                extra_query=extra_query,
+                extra_body=extra_body,
+                timeout=timeout,
+                security={"bearer_auth": True},
             ),
             cast_to=object,
         )
@@ -1169,7 +1191,11 @@ class AsyncV1Resource(AsyncAPIResource):
                 v1_request_token_params.V1RequestTokenParams,
             ),
             options=make_request_options(
-                extra_headers=extra_headers, extra_query=extra_query, extra_body=extra_body, timeout=timeout
+                extra_headers=extra_headers,
+                extra_query=extra_query,
+                extra_body=extra_body,
+                timeout=timeout,
+                security={"bearer_auth": True},
             ),
             cast_to=V1RequestTokenResponse,
         )

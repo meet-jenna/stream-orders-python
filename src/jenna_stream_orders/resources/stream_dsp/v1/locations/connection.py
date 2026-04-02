@@ -75,7 +75,11 @@ class ConnectionResource(SyncAPIResource):
             "/stream-dsp/v1/locations/connection",
             body=maybe_transform({"location_id": location_id}, connection_create_params.ConnectionCreateParams),
             options=make_request_options(
-                extra_headers=extra_headers, extra_query=extra_query, extra_body=extra_body, timeout=timeout
+                extra_headers=extra_headers,
+                extra_query=extra_query,
+                extra_body=extra_body,
+                timeout=timeout,
+                security={"bearer_auth": True},
             ),
             cast_to=NoneType,
         )
@@ -115,6 +119,7 @@ class ConnectionResource(SyncAPIResource):
                 query=maybe_transform(
                     {"location_id": location_id}, connection_retrieve_params.ConnectionRetrieveParams
                 ),
+                security={"bearer_auth": True},
             ),
             cast_to=ConnectionRetrieveResponse,
         )
@@ -149,7 +154,11 @@ class ConnectionResource(SyncAPIResource):
             "/stream-dsp/v1/locations/connection",
             body=maybe_transform({"location_id": location_id}, connection_delete_params.ConnectionDeleteParams),
             options=make_request_options(
-                extra_headers=extra_headers, extra_query=extra_query, extra_body=extra_body, timeout=timeout
+                extra_headers=extra_headers,
+                extra_query=extra_query,
+                extra_body=extra_body,
+                timeout=timeout,
+                security={"bearer_auth": True},
             ),
             cast_to=NoneType,
         )
@@ -207,7 +216,11 @@ class AsyncConnectionResource(AsyncAPIResource):
                 {"location_id": location_id}, connection_create_params.ConnectionCreateParams
             ),
             options=make_request_options(
-                extra_headers=extra_headers, extra_query=extra_query, extra_body=extra_body, timeout=timeout
+                extra_headers=extra_headers,
+                extra_query=extra_query,
+                extra_body=extra_body,
+                timeout=timeout,
+                security={"bearer_auth": True},
             ),
             cast_to=NoneType,
         )
@@ -247,6 +260,7 @@ class AsyncConnectionResource(AsyncAPIResource):
                 query=await async_maybe_transform(
                     {"location_id": location_id}, connection_retrieve_params.ConnectionRetrieveParams
                 ),
+                security={"bearer_auth": True},
             ),
             cast_to=ConnectionRetrieveResponse,
         )
@@ -283,7 +297,11 @@ class AsyncConnectionResource(AsyncAPIResource):
                 {"location_id": location_id}, connection_delete_params.ConnectionDeleteParams
             ),
             options=make_request_options(
-                extra_headers=extra_headers, extra_query=extra_query, extra_body=extra_body, timeout=timeout
+                extra_headers=extra_headers,
+                extra_query=extra_query,
+                extra_body=extra_body,
+                timeout=timeout,
+                security={"bearer_auth": True},
             ),
             cast_to=NoneType,
         )
