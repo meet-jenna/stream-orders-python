@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.2.0 (2026-04-02)
+
+Full Changelog: [v0.1.0...v0.2.0](https://github.com/meet-jenna/stream-orders-python/compare/v0.1.0...v0.2.0)
+
+### Features
+
+* **api:** manual updates ([4b212fc](https://github.com/meet-jenna/stream-orders-python/commit/4b212fccf67d0e52d74108a80d3a479a90063558))
+
+
+### Chores
+
+* update SDK settings ([5064c9a](https://github.com/meet-jenna/stream-orders-python/commit/5064c9aba248d9e633e4f9ab1fe6644a67bc490a))
+
 ## 0.1.0 (2026-03-28)
 
 Full Changelog: [v0.0.1...v0.1.0](https://github.com/meet-jenna/stream-orders-python/compare/v0.0.1...v0.1.0)
