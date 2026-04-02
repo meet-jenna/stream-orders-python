@@ -33,7 +33,8 @@ from ._base_client import (
 )
 
 if TYPE_CHECKING:
-    from .resources import stream_dsp
+    from .resources import order, stream_dsp
+    from .resources.order import OrderResource, AsyncOrderResource
     from .resources.stream_dsp.stream_dsp import StreamDspResource, AsyncStreamDspResource
 
 __all__ = [
@@ -85,6 +86,7 @@ class JennaStreamOrders(SyncAPIClient):
 
         if base_url is None:
             base_url = os.environ.get("JENNA_STREAM_ORDERS_BASE_URL")
+        self._base_url_overridden = base_url is not None
         if base_url is None:
             base_url = f"https://api.example.com"
 
@@ -104,6 +106,12 @@ class JennaStreamOrders(SyncAPIClient):
         from .resources.stream_dsp import StreamDspResource
 
         return StreamDspResource(self)
+
+    @cached_property
+    def order(self) -> OrderResource:
+        from .resources.order import OrderResource
+
+        return OrderResource(self)
 
     @cached_property
     def with_raw_response(self) -> JennaStreamOrdersWithRawResponse:
@@ -185,7 +193,7 @@ class JennaStreamOrders(SyncAPIClient):
             params = set_default_query
 
         http_client = http_client or self._client
-        return self.__class__(
+        client = self.__class__(
             api_key=api_key or self.api_key,
             base_url=base_url or self.base_url,
             timeout=self.timeout if isinstance(timeout, NotGiven) else timeout,
@@ -195,6 +203,8 @@ class JennaStreamOrders(SyncAPIClient):
             default_query=params,
             **_extra_kwargs,
         )
+        client._base_url_overridden = self._base_url_overridden or base_url is not None
+        return client
 
     # Alias for `copy` for nicer inline usage, e.g.
     # client.with_options(timeout=10).foo.create(...)
@@ -271,6 +281,7 @@ class AsyncJennaStreamOrders(AsyncAPIClient):
 
         if base_url is None:
             base_url = os.environ.get("JENNA_STREAM_ORDERS_BASE_URL")
+        self._base_url_overridden = base_url is not None
         if base_url is None:
             base_url = f"https://api.example.com"
 
@@ -290,6 +301,12 @@ class AsyncJennaStreamOrders(AsyncAPIClient):
         from .resources.stream_dsp import AsyncStreamDspResource
 
         return AsyncStreamDspResource(self)
+
+    @cached_property
+    def order(self) -> AsyncOrderResource:
+        from .resources.order import AsyncOrderResource
+
+        return AsyncOrderResource(self)
 
     @cached_property
     def with_raw_response(self) -> AsyncJennaStreamOrdersWithRawResponse:
@@ -371,7 +388,7 @@ class AsyncJennaStreamOrders(AsyncAPIClient):
             params = set_default_query
 
         http_client = http_client or self._client
-        return self.__class__(
+        client = self.__class__(
             api_key=api_key or self.api_key,
             base_url=base_url or self.base_url,
             timeout=self.timeout if isinstance(timeout, NotGiven) else timeout,
@@ -381,6 +398,8 @@ class AsyncJennaStreamOrders(AsyncAPIClient):
             default_query=params,
             **_extra_kwargs,
         )
+        client._base_url_overridden = self._base_url_overridden or base_url is not None
+        return client
 
     # Alias for `copy` for nicer inline usage, e.g.
     # client.with_options(timeout=10).foo.create(...)
@@ -432,6 +451,12 @@ class JennaStreamOrdersWithRawResponse:
 
         return StreamDspResourceWithRawResponse(self._client.stream_dsp)
 
+    @cached_property
+    def order(self) -> order.OrderResourceWithRawResponse:
+        from .resources.order import OrderResourceWithRawResponse
+
+        return OrderResourceWithRawResponse(self._client.order)
+
 
 class AsyncJennaStreamOrdersWithRawResponse:
     _client: AsyncJennaStreamOrders
@@ -444,6 +469,12 @@ class AsyncJennaStreamOrdersWithRawResponse:
         from .resources.stream_dsp import AsyncStreamDspResourceWithRawResponse
 
         return AsyncStreamDspResourceWithRawResponse(self._client.stream_dsp)
+
+    @cached_property
+    def order(self) -> order.AsyncOrderResourceWithRawResponse:
+        from .resources.order import AsyncOrderResourceWithRawResponse
+
+        return AsyncOrderResourceWithRawResponse(self._client.order)
 
 
 class JennaStreamOrdersWithStreamedResponse:
@@ -458,6 +489,12 @@ class JennaStreamOrdersWithStreamedResponse:
 
         return StreamDspResourceWithStreamingResponse(self._client.stream_dsp)
 
+    @cached_property
+    def order(self) -> order.OrderResourceWithStreamingResponse:
+        from .resources.order import OrderResourceWithStreamingResponse
+
+        return OrderResourceWithStreamingResponse(self._client.order)
+
 
 class AsyncJennaStreamOrdersWithStreamedResponse:
     _client: AsyncJennaStreamOrders
@@ -470,6 +507,12 @@ class AsyncJennaStreamOrdersWithStreamedResponse:
         from .resources.stream_dsp import AsyncStreamDspResourceWithStreamingResponse
 
         return AsyncStreamDspResourceWithStreamingResponse(self._client.stream_dsp)
+
+    @cached_property
+    def order(self) -> order.AsyncOrderResourceWithStreamingResponse:
+        from .resources.order import AsyncOrderResourceWithStreamingResponse
+
+        return AsyncOrderResourceWithStreamingResponse(self._client.order)
 
 
 Client = JennaStreamOrders

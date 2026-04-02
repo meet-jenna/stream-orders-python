@@ -62,3 +62,7 @@ Types:
 ```python
 from jenna_stream_orders.types import Customer, OrderModifier
 ```
+
+Methods:
+
+- <code title="post /order/{partner_id}">client.order.<a href="./src/jenna_stream_orders/resources/order.py">submit</a>(partner_id, \*\*<a href="src/jenna_stream_orders/types/order_submit_params.py">params</a>) -> None</code>
