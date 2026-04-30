@@ -1,5 +1,30 @@
 # Changelog
 
+## 0.4.0 (2026-04-30)
+
+Full Changelog: [v0.3.0...v0.4.0](https://github.com/meet-jenna/stream-orders-python/compare/v0.3.0...v0.4.0)
+
+### Features
+
+* support setting headers via env ([8839078](https://github.com/meet-jenna/stream-orders-python/commit/8839078d133938f7dd914b72400dd9d706db2f74))
+
+
+### Bug Fixes
+
+* **client:** preserve hardcoded query params when merging with user params ([c241b38](https://github.com/meet-jenna/stream-orders-python/commit/c241b3829eefd87d63c27acd20c6a07645bdf660))
+* ensure file data are only sent as 1 parameter ([490b517](https://github.com/meet-jenna/stream-orders-python/commit/490b517ab02f4edbdb0e8be3c5fe1b94a3a6b4de))
+* use correct field name format for multipart file arrays ([3bcbe90](https://github.com/meet-jenna/stream-orders-python/commit/3bcbe90e8a680a4a5e308e4747763ddc427e40e4))
+
+
+### Performance Improvements
+
+* **client:** optimize file structure copying in multipart requests ([7aa29fb](https://github.com/meet-jenna/stream-orders-python/commit/7aa29fbda96091137f8dfb4240544ce01820d7e0))
+
+
+### Chores
+
+* **internal:** more robust bootstrap script ([456b35f](https://github.com/meet-jenna/stream-orders-python/commit/456b35f0f25668ce7be0771594db9589f43289e3))
+
 ## 0.3.0 (2026-04-02)
 
 Full Changelog: [v0.2.0...v0.3.0](https://github.com/meet-jenna/stream-orders-python/compare/v0.2.0...v0.3.0)
